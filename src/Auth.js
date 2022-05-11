@@ -17,7 +17,6 @@ export default function Auth() {
         password: password,
       });
       if (error) throw error;
-      alert("Check your email for the login link!");
     } catch (error) {
       alert(error.error_description || error.message);
     } finally {
@@ -35,7 +34,11 @@ export default function Auth() {
         password: password,
       });
       if (error) throw error;
-      alert("Check your email for the login link!");
+
+      await supabase
+      .from('users')
+      .insert({user_id: supabase.auth.user().id, username: username});
+
     } catch (error) {
       alert(error.error_description || error.message);
     } finally {

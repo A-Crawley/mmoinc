@@ -16,12 +16,13 @@ const darkTheme = createTheme({
 });
 
 const init = async () => {
-  if (supabase.auth.user() === undefined) return;
+  const user = supabase.auth.user();
+  if (user === null) return;
 
   const { data: inventories, error } = await supabase
     .from("inventories")
     .select("*")
-    .eq("user_id", supabase.auth.user().id);
+    .eq("user_id", user.id);
 
   console.log({ inventory: inventories[0] });
 
@@ -39,13 +40,25 @@ export default function App() {
 
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      console.log({session})
+      if(session === null)
+        return;
+
+      init().then((e) => {
+        console.log({fruit: e.inventory?.fruit ?? 0, e})
+        setInventory({
+          ...inventory,
+          fruit: e.inventory?.fruit ?? 0,
+        });
+        setLoading(false);
+      });
     });
 
     init().then((e) => {
-      console.log({fruit: e.inventory?.fruit ?? 0, e})
+      console.log({fruit: e?.inventory?.fruit ?? 0, e})
       setInventory({
         ...inventory,
-        fruit: e.inventory?.fruit ?? 0,
+        fruit: e?.inventory?.fruit ?? 0,
       });
       setLoading(false);
     });
@@ -57,13 +70,13 @@ export default function App() {
       <Container maxWidth="lx">
         <Paper elevation={2} sx={{ height: "600px", marginTop: "50px" }}>
           {
-            loading 
+            loading || session === null
             ? null
             : <Fruit pickSpeed={500} fruit={inventory.fruit.amount} />
           }
         </Paper>
         {!session ? <Auth /> : null}
-        <Button onClick={() => supabase.auth.signOut()}>Logout</Button>
+        <Button onClick={() => {supabase.auth.signOut(); setSession(null); setLoading(true)}}>Logout</Button>
       </Container>
     </ThemeProvider>
   );

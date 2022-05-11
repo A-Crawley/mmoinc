@@ -14,9 +14,6 @@ export default function Fruit(props) {
   });
 
   useEffect(() => {
-
-    console.log('INIT FRUIT')
-
     const func = () => {
         subscription = supabase
         .from(`inventories:user_id=eq.${supabase.auth.user().id}`)
@@ -33,6 +30,8 @@ export default function Fruit(props) {
     if(supabase.auth.user() !== undefined && subscription === null){
         func();
     } 
+
+    console.log({subCheck: {subscription}})
 
   }, [fruit]);
 
