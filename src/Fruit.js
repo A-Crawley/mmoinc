@@ -50,7 +50,7 @@ export default function Fruit(props) {
 
     console.log({ inventories , Aerror })
 
-    if(inventories === undefined && Aerror === undefined)    {
+    if(inventories.length === 0 && Aerror === undefined)    {
         const { data, error } = await supabase
         .from("inventories")
         .insert({ user_id: supabase.auth.user().id, fruit: { amount: fruit.amount + 1 } });

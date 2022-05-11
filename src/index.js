@@ -42,10 +42,10 @@ export default function App() {
     });
 
     init().then((e) => {
-      console.log({fruit: e.inventory.fruit, e})
+      console.log({fruit: e.inventory?.fruit ?? 0, e})
       setInventory({
         ...inventory,
-        fruit: e.inventory.fruit,
+        fruit: e.inventory?.fruit ?? 0,
       });
       setLoading(false);
     });
@@ -63,6 +63,7 @@ export default function App() {
           }
         </Paper>
         {!session ? <Auth /> : null}
+        <Button onClick={() => supabase.auth.signOut()}>Logout</Button>
       </Container>
     </ThemeProvider>
   );
