@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/mmoinc/static/js/main.04682686.js",
+    "main.js": "/mmoinc/static/js/main.ff9abb09.js",
     "index.html": "/mmoinc/index.html",
-    "main.04682686.js.map": "/mmoinc/static/js/main.04682686.js.map"
+    "main.ff9abb09.js.map": "/mmoinc/static/js/main.ff9abb09.js.map"
   },
   "entrypoints": [
-    "static/js/main.04682686.js"
+    "static/js/main.ff9abb09.js"
   ]
 }
