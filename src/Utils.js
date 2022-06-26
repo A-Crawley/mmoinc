@@ -14,9 +14,9 @@ export const ToObjectList = (object) => {
  * @param {Date} date 
  */
 export const FormatDate = (date) => {
-    let day = date.getDate();
-    let month = date.getMonth();
-    let year = date.getFullYear();
+    let day = String(date.getDate()).padStart(2,0);
+    let month = String(date.getMonth()).padStart(2,0);
+    let year = String(date.getFullYear());
 
     
 
@@ -28,9 +28,11 @@ export const FormatDate = (date) => {
  * @param {Date} date 
  */
 export const FormatTime = (date) => {
-    let hour = date.getHours();
-    let minute = date.getMinutes();
-    let second = date.getSeconds();
+    let hour = String(date.getHours() % 12 === 0 ? 12 : date.getHours() % 12).padStart(2,0);
+    let minute = String(date.getMinutes()).padStart(2,0);
+    let second = String(date.getSeconds()).padStart(2,0);
 
-    return `${hour}:${minute}:${second}`;
+    let suffix = date.getHours() >= 12 ? 'pm' : 'am'
+
+    return `${hour}:${minute}:${second} ${suffix}`;
 }
