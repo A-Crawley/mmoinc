@@ -2,11 +2,23 @@ import ReactDOM from "react-dom/client";
 import { useState, useEffect } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Button, Container, Paper, Stack, Typography } from "@mui/material";
-import FruitCard from "./FruitCard.js";
-import { areArraysEqual } from "@mui/base";
-import { Delay, ToObjectList } from "./Utils.js";
-import Fruit from "./Fruit.js";
+import {
+  Button,
+  ButtonGroup,
+  Container,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import CollectCard from "./CollectCard.js";
+import { Delay, FormatDate, FormatTime, ToObjectList } from "./Utils.js";
+import Item from "./Item.js";
 
 const darkTheme = createTheme({
   palette: {
@@ -17,68 +29,173 @@ const darkTheme = createTheme({
 const initialise = () => {
   return {
     Inventory: {
-      Fruit: {
-        Berry: new Fruit('Berry',0),
-        Apple: new Fruit('Apple',0),
-        Banana: new Fruit('Banana',0),
-        Mango: new Fruit('Mango',0),
-        Kiwi: new Fruit('Kiwi',0),
-        Orange: new Fruit('Orange',0),
-        Coconut: new Fruit('Coconut',0),
-      }
-    }
+      Items: {
+        Strawberry: new Item("Strawberry", 0)
+      },
+    },
+    ActivePage: "field"
   };
-}
+};
 
 export default function App() {
   const [gameData, setGameData] = useState(initialise());
+  const [date, setDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    Delay(100).then(() => 
-    setLoading(false));
+    Delay(100).then(() => setLoading(false));
+    setInterval(() => {
+      setDate(new Date());
+    }, 100)
   }, []);
 
-  useEffect(() => {
-  }, [gameData]);
+  useEffect(() => {}, [gameData]);
 
-  const PickFruit = async (fruit) => {
-    console.log(fruit)
-    let tempFruit = fruit.SetCanPick(false);
-    setGameData({...gameData, Inventory: {...gameData.Inventory, ...tempFruit }});
+  const CollectItem = async (item) => {
+    console.log(item);
+    item.SetCanCollect(false);
+    setGameData({ ...gameData });
 
-    await Delay(fruit.PickSpeed);
+    await Delay(item.CollectSpeed);
 
-    tempFruit = fruit.SetCanPick(true);
-    tempFruit = fruit.Pick();
-    setGameData({...gameData, Inventory: {...gameData.Inventory, ...tempFruit }});
+    item.SetCanCollect(true);
+    item.Collect();
+    setGameData({ ...gameData });
+  };
+
+  const SetActivePage = (page) => {
+    setGameData({
+      ...gameData,
+      ActivePage: page,
+    });
+  };
+
+  const GetPage = (page) => {
+    switch (page) {
+      case "field":
+        return FieldPage();
+      default:
+        return Page();
+    }
+  };
+
+  const FieldPage = () => {
+    return (
+      <Stack direction={"row"} spacing={4}>
+        {ToObjectList(gameData.Inventory.Items).map((item) => {
+          return (
+            <CollectCard
+              name={item.Name}
+              amount={item.Amount}
+              collectSpeed={item.CollectSpeed}
+              canCollect={item.CanCollect}
+              collect={async (a) => await CollectItem(item)}
+            />
+          );
+        })}
+      </Stack>
+    );
+  };
+
+  const Page = () => {
+    return (
+      <Typography>
+        TBC
+      </Typography>
+    )
   }
 
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Container maxWidth="lx">
-        <Paper elevation={2} sx={{ height: "600px", marginTop: "50px", p: 4 }}>
-          {
-            loading ? null : (
-              <Stack direction={'row'} spacing={4}>
+      <Container maxWidth="lx" sx={{ pt: 4 }}>
+        <ButtonGroup>
+          <Button
+            variant={gameData.ActivePage === "field" ? "contained" : "outlined"}
+            sx={{ borderRadius: "4px 4px 0 0" }}
+            onClick={() => SetActivePage("field")}
+          >
+            Field
+          </Button>
+          <Button
+            variant={gameData.ActivePage === "home" ? "contained" : "outlined"}
+            onClick={() => SetActivePage("home")}
+          >
+            Home stead
+          </Button>
+          <Button
+            variant={gameData.ActivePage === "town" ? "contained" : "outlined"}
+            onClick={() => SetActivePage("town")}
+          >
+            Town
+          </Button>
+          <Button
+            variant={gameData.ActivePage === "city" ? "contained" : "outlined"}
+            onClick={() => SetActivePage("city")}
+          >
+            City
+          </Button>
+          <Button
+            variant={
+              gameData.ActivePage === "country" ? "contained" : "outlined"
+            }
+            sx={{ borderRadius: "4px 4px 0 0" }}
+            onClick={() => SetActivePage("country")}
+          >
+            Country
+          </Button>
+        </ButtonGroup>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, sm: 1 }}>
+        <Paper elevation={2} sx={{ height: "600px", p: 4, width: { xs: '100%', sm: '80%' } }}>
+          {loading ? null : GetPage(gameData.ActivePage)}
+        </Paper>
+        <Paper elevation={2} sx={{ height: "600px", p: 4, width: { xs: '100%', sm: '20%' } }}>
+          <Typography>
+            { FormatDate(date) }
+          </Typography>
+          <Typography>
+            { FormatTime(date) }
+          </Typography>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      Name
+                    </TableCell>
+                    <TableCell align={'right'}>
+                      Amount
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
                 {
-                  ToObjectList(gameData.Inventory.Fruit).map(fruit => {
+                  ToObjectList(gameData.Inventory.Items).map(item => {
                     return (
-                      <FruitCard name={fruit.Name} 
-                                 amount={fruit.Amount} 
-                                 pickSpeed={fruit.PickSpeed} 
-                                 canPick={fruit.CanPick} 
-                                 pickFruit={async (a) => await PickFruit(fruit)} />
+                      <TableRow>
+                        <TableCell>
+                          { item.Name }
+                        </TableCell>
+                        <TableCell align={'right'}>
+                          { item.Amount }
+                        </TableCell>
+                      </TableRow>
                     )
                   })
                 }
-              </Stack>
-            )
-          }
+                </TableBody>
+              </Table>
+            </TableContainer>
         </Paper>
-        <Button onClick={() => {console.log(gameData)}}>Click</Button>
+        </Stack>
+        <Button
+          onClick={() => {
+            console.log(gameData);
+          }}
+        >
+          Click
+        </Button>
       </Container>
     </ThemeProvider>
   );

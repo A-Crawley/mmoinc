@@ -1,29 +1,26 @@
-import { useState, useEffect } from "react";
-import { Delay } from './Utils.js'
 import { Button, Paper, Typography, Box } from "@mui/material";
 import { green } from "@mui/material/colors";
 import CircularProgress from "@mui/material/CircularProgress";
-import { FileUploadRounded } from "@mui/icons-material";
 
-export default function FruitCard({name, amount, pickSpeed, canPick, pickFruit}) {
+export default function CollectCard({name, amount, collectSpeed, canCollect, collect}) {
   return (
-    <Paper sx={{ padding: "8px", maxWidth: "200px" }}>
+    <Paper sx={{ padding: "8px", width: { xs: '100%', sm: '200px'} , maxWidth: { xs: '100%', sm: "200px" } }}>
       <Typography align="center" sx={{ marginBottom: "8px" }}>
         {name}
       </Typography>
       <Typography>Amount: {amount}</Typography>
-      <Typography>Pick Speed: {pickSpeed / 1000}/s</Typography>
-      <Typography>Can Pick: {canPick.toString()}</Typography>
+      <Typography>Collect Speed: {collectSpeed / 1000}/s</Typography>
+      <Typography>Can Collect: {canCollect.toString()}</Typography>
       <Box sx={{ position: "relative" }}>
         <Button
           fullWidth={true}
           variant="contained"
-          onClick={async () => {console.log(pickFruit);await pickFruit('boop')}}
-          disabled={!canPick}
+          onClick={async () => await collect()}
+          disabled={!canCollect}
         >
           Pick
         </Button>
-        {!canPick && (
+        {!canCollect && (
           <CircularProgress
             size={24}
             sx={{

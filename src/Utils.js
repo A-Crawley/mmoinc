@@ -8,3 +8,29 @@ export const ToObjectList = (object) => {
         ...object[key]
     }))
 }
+
+/**
+ * 
+ * @param {Date} date 
+ */
+export const FormatDate = (date) => {
+    let day = date.getDate();
+    let month = date.getMonth();
+    let year = date.getFullYear();
+
+    
+
+    return `${day}/${month}/${year}`;
+}
+
+/**
+ * 
+ * @param {Date} date 
+ */
+export const FormatTime = (date) => {
+    let hour = date.getHours();
+    let minute = date.getMinutes();
+    let second = date.getSeconds();
+
+    return `${hour}:${minute}:${second}`;
+}
